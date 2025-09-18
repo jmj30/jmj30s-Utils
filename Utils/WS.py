@@ -1,11 +1,9 @@
-from Utils import Path, loadEnv, EnvException
+from Utils import Path, Env
 
 def loadKey(path:Path):
     """Loads Secret Key
-
     Args:
         path (Path): Path of the env file
-
     Returns:
         str: Secret Key
     """

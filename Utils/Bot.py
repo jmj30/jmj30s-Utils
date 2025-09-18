@@ -1,16 +1,14 @@
-from Utils import Path, loadEnv, EnvException
+from Utils import Path, Env, EnvException
 import collections
 
 def loadToken(path:Path):
     """Load Bot Token
-
     Args:
         path (Path): Path of the env file
-
     Returns:
         str: Bot Token
     """
-    try: return loadEnv(path, "TOKEN")
+    try: return Env().loadEnv(path, "TOKEN")
     except (EnvException, FileNotFoundError):
         try: open(path, 'x').close()
         except FileExistsError: pass
