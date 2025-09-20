@@ -1,4 +1,5 @@
 # Path
+from dataclasses import dataclass
 from pathlib import Path
 
 # Toml
@@ -10,8 +11,12 @@ class TomlException(Exception):
     """
     def __init__(self, message):
         super().__init__(message)
+@dataclass
+class TomlHelper:
+    table: str
+    key: str
 class Toml:
-    from tomllib import load as lt
+    import tomllib
     def loadToml(self, path:Path | str):
         """Loads a toml file
         Args:
@@ -22,30 +27,31 @@ class Toml:
             dict: The toml file as a dict
         """
         if type(path) is str: path = Path(path)
-        if path.is_file(): return self.lt(path.open("rb"))
+        if path.is_file(): return self.tomllib.load(path.open("rb"))
         raise FileNotFoundError(f'"{path}" Is Not a File')
-    def loadTomlData(self, path:Path, data:list) -> any:
+    def loadTomlData(self, path:Path, data:TomlHelper) -> str | int | bool:
         """loads data from a toml file
         Args:
             path (Path | str): Path object or string
-            data (str): String of the valve to get
+            data (TomlHelper): Table, Key
         Raises:
             TomlException: When toml file is missing data
         Returns:
             any: any type of object
         """
-        if str(data[0]).__contains__('.'):
-            l = str(data[0]).split('.')
-            try: Lt = loadToml(path)[l[0]][l[1]]
-            except KeyError: raise TomlException(f'Toml Missing "{data}"')
+        missing = f'Toml Missing "{data.table}.{data.key}"'
+        if str(data.table).__contains__('.'):
+            l = str(data.table).split('.')
+            try: Lt = self.loadToml(path)[l[0]][l[1]]
+            except KeyError: raise TomlException(missing)
         else: 
-            try: Lt = loadToml(path)[data[0]]
-            except KeyError: raise TomlException(f'Toml Missing "{data}"')
-        try: return Lt[data[1]]
-        except KeyError: raise TomlException(f'Toml Missing "{data}"')
-    def loadDefaults(self, path:Path, data:list, Dict:dict) -> str:
+            try: Lt = self.loadToml(path)[data.table]
+            except KeyError: raise TomlException(missing)
+        try: return Lt[data.key]
+        except KeyError: raise TomlException(missing)
+    def loadDefaults(self, path:Path, data:TomlHelper, Dict:dict) -> str:
         try: return self.loadTomlData(path, data)
-        except (TomlException, FileNotFoundError): return Dict[data[1]]
+        except (TomlException, FileNotFoundError): return Dict[data.key]
 
 # Env
 class EnvException(Exception):
@@ -57,8 +63,8 @@ class EnvException(Exception):
     def __init__(self, message):
         super().__init__(message)
 class Env:
-    from dotenv import load_dotenv as le
-    from os import environ
+    import dotenv
+    import os
     def loadEnv(self, path:Path | str, data:str):
         """Loads the Env file
 
@@ -74,8 +80,8 @@ class Env:
         if type(path) is str: path = Path(path)
         if path.is_file():
             try:
-                self.le(path)
-                return self.environ[data]
+                self.dotenv.load_dotenv(path)
+                return self.os.environ[data]
             except KeyError: raise EnvException(f'Env Missing "{data}"')
         else: raise FileNotFoundError(f'"{path}" Is Not a File')
 
