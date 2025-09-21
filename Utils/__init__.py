@@ -93,8 +93,7 @@ class JsonException(Exception):
         def __init__(self, message):
             super().__init__(message)
 class Json:
-    from json import load as lj
-    from json.decoder import JSONDecodeError
+    import json
     def loadJson(self, path:Path) -> dict:
         """Loads a JSON file
         Args:
@@ -106,7 +105,7 @@ class Json:
         """
         if type(path) is str: path = Path(path)
         with open(path) as file:
-            try: return self.lj(file)
-            except self.JSONDecodeError as err:
+            try: return self.json.load(file)
+            except self.json.JSONDecodeError as err:
                 if file.read().strip() == "": raise JsonException("JSON File Empty")
                 else: JsonException(err)
