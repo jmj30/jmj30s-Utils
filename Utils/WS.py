@@ -1,4 +1,4 @@
-from Utils import Path, Env
+from Utils import Path, Env, EnvException
 
 def loadKey(path:Path):
     """Loads Secret Key
@@ -7,7 +7,7 @@ def loadKey(path:Path):
     Returns:
         str: Secret Key
     """
-    try: return str(loadEnv(path, "SECRET_KEY"))
+    try: return str(Env().loadEnv(path, "SECRET_KEY"))
     except (EnvException, FileNotFoundError):
         try: open(path, 'x').close()
         except FileExistsError: pass
