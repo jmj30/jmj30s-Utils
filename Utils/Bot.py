@@ -31,7 +31,7 @@ def file_to_ext(str_path, base_path):
     str_path = str_path.replace(base_path, "")
     str_path = str_path.replace("/", ".")
     return str_path.replace(".py", "")
-def get_all_extensions(str_path, folder="Bot_Modules"):
+def get_all_extensions(str_path, folder="Modules"):
     # gets all extensions in a folder
     ext_files = collections.deque()
     loc_split = str_path.split(folder)
